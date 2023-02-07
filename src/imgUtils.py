@@ -56,6 +56,7 @@ def manualThreshold(filename, output='array', invert=True):
     cv2.namedWindow('Raw Image', cv2.WINDOW_KEEPRATIO)
     cv2.namedWindow('HSV Image', cv2.WINDOW_KEEPRATIO)
     cv2.namedWindow('Thresholding', cv2.WINDOW_KEEPRATIO)
+    cv2.namedWindow('Masked', cv2.WINDOW_KEEPRATIO)
 
     cv2.imshow('Raw Image', rawImg)
     cv2.imshow('HSV Image', hsvImg)
@@ -68,8 +69,12 @@ def manualThreshold(filename, output='array', invert=True):
         Smax = cv2.getTrackbarPos('Smax', 'Track Bars')
         Vmax = cv2.getTrackbarPos('Vmax', 'Track Bars')
 
-        fImg = cv2.inRange(hsvImg, (Hmin, Smin, Vmin), (Hmax, Smax, Vmax))
+        fImg = cv2.inRange(hsvImg, (Hmin, Smin, Vmin), (Hmax, Smax, Vmax)).astype("uint8")
         cv2.imshow('Thresholding', fImg)
+
+        # mask = np.zeros(rawImg.shape[:2], dtype="uint8")
+        masked = cv2.bitwise_or(rawImg, rawImg, mask=fImg)
+        cv2.imshow('Masked', masked)
         key = cv2.waitKey(25)
         if key == ord('q'):
             break
