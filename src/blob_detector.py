@@ -32,7 +32,7 @@ def momentCoord(conts):
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])
         coordinates.extend([cX, cY])
-    coordinates = np.array(coordinates).reshape((4, 2))
+    coordinates = np.float32(coordinates).reshape((4, 2))
     return coordinates
 
 
