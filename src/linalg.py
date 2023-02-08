@@ -6,6 +6,7 @@ from cv2 import getPerspectiveTransform, warpPerspective
 import numpy as np
 from numpy import linalg
 
+
 def closestCorner(src_corners, markers):
     """
     Take a 4x2 Numpy array, src_corners, of the coordinates of the src image
