@@ -34,8 +34,10 @@ def manualThreshold(filename, output='array', invert=True):
     '''
     assert output == 'array' or output == 'values' or output == 'both'
     assert invert == True or invert == False
-    rawImg = cv2.imread(filename)
-    hsvImg = cv2.cvtColor(rawImg, cv2.COLOR_BGR2HSV)
+    # rawImg = cv2.imread(filename)
+    rawImg = filename
+    # hsvImg = cv2.cvtColor(rawImg, cv2.COLOR_BGR2HSV)
+    hsvImg = cv2.cvtColor(filename, cv2.COLOR_BGR2HSV)
 
     # empty function
     def _doNothing(x):
@@ -91,3 +93,18 @@ def manualThreshold(filename, output='array', invert=True):
         return mask_values
     elif output == 'both':
         return fImg, hsvValues
+
+
+# for c in conts:
+#     M = cv2.moments(c)
+#
+    # cX = int(M["m10"] / M["m00"])
+    # cY = int(M["m01"] / M["m00"])
+#
+    # corners.extend([cX, cY])
+    # text_org = (cX-round(shape[1]*.01), cY - round(shape[0] * .02))
+#
+    # cv2.drawContours(orig, [c], -1, (0, 255, 0), 2)
+    # cv2.circle(orig, (cX, cY), 7, (255, 255, 255), -1)
+    # cv2.putText(orig, 'center', text_org, cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
+

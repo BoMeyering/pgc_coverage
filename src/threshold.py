@@ -14,8 +14,9 @@ def manualThreshold(filename, output='array', invert=True):
 	'''
 	assert output == 'array' or output == 'values' or output == 'both'
 	assert invert==True or invert==False
-	rawImg = cv2.imread(filename)
-	hsvImg = cv2.cvtColor(rawImg, cv2.COLOR_BGR2HSV)
+	# rawImg = cv2.imread(filename)
+	hsvImg = cv2.cvtColor(filename, cv2.COLOR_BGR2HSV)
+	# hsvImg = cv2.cvtColor(rawImg, cv2.COLOR_BGR2HSV)
 
 	#empty function
 	def _doNothing(x):
