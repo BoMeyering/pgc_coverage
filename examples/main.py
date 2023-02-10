@@ -6,13 +6,14 @@ import numpy as np
 
 sys.path.insert(0,'../src')
 from detection import detectMarkers, momentCoord
-from utils import manualThreshold, imgCorners, showImage
-from linalg import closestCorner, imgTransform
+from utils import manualThreshold, showImage
+from linalg import closestCorner, imgTransform, imgCorners
 from processing import createMasks, maskROI, kmeans
+from pipeline import setParameters
 
-img = cv2.imread('./images/blue_markers/IMG_1162.jpg')
-
-
+img = cv2.imread('./images/blue_markers/IMG_1158.jpg')
+params = setParameters('./images/blue_markers/IMG_1158.jpg')
+print(params)
 # manualThreshold(filename="../examples/images/blue_markers/IMG_1156.jpg")
 hsv_min = (85, 120, 215)
 hsv_max = (179, 255, 255)

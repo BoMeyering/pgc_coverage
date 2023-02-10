@@ -15,15 +15,7 @@ def showImage(src):
     cv2.waitKey(0)
     cv2.destroyWindow('Image')
 
-def imgCorners(src):
-    """
-    Get the 4 corner points of an image
-    """
-    shape = src.shape
-    tl, tr, bl, br = [0, 0], [shape[1], 0], [0, shape[0]], [shape[1], shape[0]]
-    src_corners = np.array([tl, tr, bl, br], dtype=np.float32)
 
-    return src_corners
 def manualThreshold(filename, output='array', invert=True):
     '''
     Manual, interactive thresholding of images

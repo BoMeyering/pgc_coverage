@@ -7,6 +7,16 @@ import numpy as np
 from numpy import linalg
 
 
+def imgCorners(src):
+    """
+    Get the 4 corner points of an image
+    """
+    shape = src.shape
+    tl, tr, bl, br = [0, 0], [shape[1], 0], [0, shape[0]], [shape[1], shape[0]]
+    src_corners = np.array([tl, tr, bl, br], dtype=np.float32)
+
+    return src_corners
+
 def closestCorner(src_corners, markers):
     """
     Take a 4x2 Numpy array, src_corners, of the coordinates of the src image
