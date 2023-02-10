@@ -36,10 +36,10 @@ def maskROI(src, masks):
     subImg = []
     for mask in masks:
         src_roi = cv2.bitwise_and(src, src, mask=mask)
-        cv2.namedWindow('slice', cv2.WINDOW_NORMAL)
-        cv2.imshow('slice', src_roi)
-        cv2.waitKey()
-        cv2.destroyWindow('slice')
+        # cv2.namedWindow('slice', cv2.WINDOW_NORMAL)
+        # cv2.imshow('slice', src_roi)
+        # cv2.waitKey()
+        # cv2.destroyWindow('slice')
         subImg.append(src_roi)
     subImg=np.array(subImg)
     return subImg
