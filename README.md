@@ -31,3 +31,6 @@ Python code for taking images of perennial groundcover plots mixed in with cash 
 ## To Do
 * Refactor marker identification code
 * Transform image code
+
+![alt text](./examples/images/output/29_maskedFull.jpg)
+![alt text](./examples/images/output/29_reprojected.jpg)
