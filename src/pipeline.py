@@ -7,6 +7,7 @@ from detection import *
 from processing import createMasks, maskROI, recreateImg
 from linalg import closestCorner, imgTransform, imgCorners
 from utils import showImage
+from vegIndices import *
 
 
 class imageProcess:
@@ -22,13 +23,15 @@ class imageProcess:
         self.centers = None
         self.srcCorners = None
         self.transformedImg = None
+        self.viBin = None
+        self.viColored = None
         self.zoneMasks = None
         self.ROI = None
         self.pgcMasks = None
         self.maskedZones = None
         self.zoneProps = None
 
-    def process(self, zones, threshold, output_size=(1200, 2400), preprocess=None):
+    def process(self, zones, threshold, output_size=(1200, 2400), VI=MGRVI):
         """
 
         :param zones:
@@ -64,9 +67,25 @@ class imageProcess:
 
         # Transform the image to a rectangle
         transformed = imgTransform(centers, rawImg, output_size)
-        # showImage(transformed)
+        if VI != None:
+            vi = VI(transformed, scaling='relative')
+            print(np.min(vi))
+            print(np.max(vi))
+            # print(relScale(vi))
+            vi = relScale(vi)
+            self.viBin = vi
+            vi = (vi*255).astype(np.uint8)
+            print(np.min(vi))
+            print(np.max(vi))
+            # showImage(vi)
+            grvi_map = cv2.applyColorMap(vi, cv2.COLORMAP_CIVIDIS)
+            self.viColored = grvi_map
+
         masks = createMasks(transformed, zones=zones)
         rois = maskROI(transformed, masks)
+        if self.viBin is not None:
+            vi_cond = True
+            viROIs = maskROI(self.viBin, masks)
         self.transformedImg = transformed
         self.zoneMasks = masks
         self.ROI = rois
@@ -74,6 +93,7 @@ class imageProcess:
         pgcMasks = []
         maskedZones = []
         zoneProps = []
+        VIProps = []
         for i in range(zones):
             ROI = rois[i]
             zoneMask = self.zoneMasks[i]
@@ -87,12 +107,18 @@ class imageProcess:
             maskedZone = cv2.bitwise_and(ROI, ROI, mask=pgcMask)
             maskedZones.append(maskedZone)
 
+            if vi_cond:
+                viRoi = cv2.bitwise_and(self.viColored, self.viColored, mask=pgcMask)
+                avgVI = np.mean(viRoi[np.where(viRoi > 0)])
+                VIProps.append(avgVI)
+
             # Calculate proportion of cover
             zoneProp = np.sum(pgcMask/255)/np.sum(zoneMask)
             zoneProps.append(zoneProp)
         self.pgcMasks = np.array(pgcMasks)
         self.maskedZones = np.array(maskedZones)
         self.zoneProps = np.array(zoneProps)
+        self.VIProps = np.array(VIProps)
         self.maskedFull = recreateImg(self.pgcMasks, self.transformedImg.shape[0:2])
         self.maskedZonesFull = recreateImg(self.maskedZones, self.transformedImg.shape)
 
@@ -118,7 +144,27 @@ class imageProcess:
 
         self.reprojected = combined
 
+    def _reprojectVI(self):
+        """
 
+        :return:
+        """
+        roiCorners = imgCorners(self.maskedZonesFull)
+        # print(roiCorners)
+
+        M = cv2.getPerspectiveTransform(roiCorners, self.centers)
+        # print(M)
+        trImg = cv2.warpPerspective(self.viColored, M, (self.rawImg.shape[1], self.rawImg.shape[0]))
+
+        rawImgBlack = self.rawImg
+        centers = self.centers.astype(np.int32)
+        centers = centers[[0, 1, 3, 2],:]
+        rawImgBlack = cv2.fillPoly(rawImgBlack, [centers], (0, 0, 0))
+
+        # combined = cv2.bitwise_or(rawImgBlack, trImg, mask=None)
+        combined = cv2.add(rawImgBlack, trImg)
+
+        self.reprojectedVI = combined
 
 
 
@@ -216,7 +262,7 @@ def determineParams(filename, zones=5, aggregation=np.mean):
     showImage(img)
 
     hsv_min = (85, 120, 215)
-    hsv_max = (179, 255, 255)
+    hsv_max = (150, 255, 255)
     conts = detectMarkers(img, hsv_min, hsv_max)
     centers = momentCoord(conts)
     src_corners = imgCorners(img)
